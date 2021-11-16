@@ -1,0 +1,38 @@
+<nav [ngClass]="{ sidebarPushRight: isActive, collapsed: collapsed }" class="sidebar">
+    <div class="list-group">
+        <a [routerLinkActive]="['router-link-active']" class="list-group-item" routerLink="/dashboard">
+            <i class="fa fa-fw fa-dashboard"></i>&nbsp;
+            <span>{{ 'Dashboard' | translate }}</span>
+        </a>
+        <a *ngIf="isadmin" [routerLinkActive]="['router-link-active']" [routerLink]="['/users']"
+            class="list-group-item">
+            <i class="fa fa-fw fa-users"></i>&nbsp;
+            <span>{{ 'User' | translate }}</span>
+        </a>
+
+        <div class="header-fields">
+            <a (click)="rltAndLtr()" class="list-group-item">
+                <span><i class="fa fa-arrows-h"></i>&nbsp; RTL/LTR</span>
+            </a>
+            <div class="nested-menu">
+                <a (click)="addExpandClass('profile')" class="list-group-item">
+                    <span><i class="fa fa-user"></i>&nbsp; {{LoginUserDetails?.firstName + ' ' +
+                        LoginUserDetails?.lastName}} </span>
+                </a>
+                <li [class.expand]="showMenu === 'profile'" class="nested">
+                    <ul class="submenu">
+                        <li>
+                            <a (click)="onLoggedout()" [routerLink]="['/login']">
+                                <span><i class="fa fa-fw fa-power-off"></i> {{ 'Log Out' | translate }}</span>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+            </div>
+        </div>
+    </div>
+    <div (click)="toggleCollapsed()" [ngClass]="{ collapsed: collapsed }" class="toggle-button">
+        <i class="fa fa-fw fa-angle-double-{{ collapsed ? 'right' : 'left' }}"></i>&nbsp;
+        <span>{{ 'Collapse Sidebar' | translate }}</span>
+    </div>
+</nav>

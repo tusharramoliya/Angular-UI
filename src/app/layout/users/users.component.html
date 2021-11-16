@@ -1,0 +1,235 @@
+<div [@routerTransition]>
+    <app-page-header [heading]="'Users'" [icon]="'fa-users'"></app-page-header>
+    <div class="card mb-3">
+        <div class="card-header">User List</div>
+        <div class="card-body table-responsive">
+            <div class="row">
+                <div class="col-md-12" *ngIf="isshowmainalert">
+                    <div *ngIf="!iserror" role="alert" class="alert alert-success alert-dismissible text-left">
+                        <button aria-label="Close" class="close" (click)="hideAllAlert()" type="button"><span
+                                aria-hidden="true">×</span></button>
+                        {{alertmessage}}
+                    </div>
+                    <div *ngIf="iserror" role="alert" class="alert alert-danger alert-dismissible text-left">
+                        <button aria-label="Close" class="close" (click)="hideAllAlert()" type="button"><span
+                                aria-hidden="true">×</span></button>
+                        {{alertmessage}}
+                    </div>
+                </div>
+                <div class="col-md-12">
+                    <form>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group form-inline">
+                                    Search: <input class="form-control ml-2" type="text" name="searchTerm"
+                                        [(ngModel)]="service.searchTerm" />
+                                    <span class="ml-3" *ngIf="service.loading$ | async">Loading...</span>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <button class="btn btn-primary float-right text-white"
+                                    (click)="CreateUpdateUser(userpopupcontent)">
+                                    <i class="fa fa-plus text-white fa-lg mr-2"></i> Add User
+                                </button>
+                            </div>
+                        </div>
+
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th scope="col">#</th>
+                                    <th scope="col" sortable="firstName" (sort)="onSort($event)">First Name</th>
+                                    <th scope="col" sortable="lastName" (sort)="onSort($event)">Last Name</th>
+                                    <th scope="col" sortable="email" (sort)="onSort($event)">Email</th>
+                                    <th scope="col" sortable="role" (sort)="onSort($event)">Role</th>
+                                    <th scope="col" sortable="role" (sort)="onSort($event)">Message</th>
+                                    <th scope="col">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr *ngFor="let user of userlist$ | async">
+                                    <th scope="row">{{ user.id }}</th>
+                                    <td>{{user.firstName}}</td>
+                                    <td>{{user.lastName}}</td>
+                                    <td>{{user.email}}</td>
+                                    <td>{{user.role}}</td>
+                                    <td>{{user.message}}</td>
+                                    <td>
+                                        <button class="btn btn-primary btn-sm mr-2"
+                                            (click)="UpdateUserPopup(userpopupcontent,user)">
+                                            <i class="fa fa-pencil fa-lg text-white"></i>
+                                        </button>
+                                        <button class="btn btn-danger btn-sm mr-2"
+                                            *ngIf="user.role.toLowerCase() != 'superadmin'"
+                                            (click)='DeleteUserPopup(userdeleteconfirmation,user)'>
+                                            <i class="fa fa-trash fa-lg text-white"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <div class="d-flex justify-content-between p-2">
+                            <ngb-pagination [collectionSize]="(total$ | async)!" [(page)]="service.page"
+                                [pageSize]="service.pageSize">
+                            </ngb-pagination>
+                            <select class="custom-select" style="width: auto" name="pageSize"
+                                [(ngModel)]="service.pageSize">
+                                <option [ngValue]="10">10</option>
+                                <option [ngValue]="15">15</option>
+                                <option [ngValue]="20">20</option>
+                            </select>
+                        </div>
+
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <ng-template #userpopupcontent let-c="close" let-d="dismiss">
+        <form #f="ngForm" (ngSubmit)="onSubmit(f)" novalidate>
+            <div class="modal-header">
+                <h4 class="modal-title">{{UserAction}}</h4>
+                <button (click)="d('Cross click')" aria-label="Close" class="close">
+                    &times;
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="col-md-12" *ngIf="isshowpopupalert">
+                    <div *ngIf="!iserror" role="alert" class="alert alert-success alert-dismissible text-left">
+                        <button aria-label="Close" class="close" (click)="hideAllAlert()" type="button"><span
+                                aria-hidden="true">×</span></button>
+                        {{alertmessage}}
+                    </div>
+                    <div *ngIf="iserror" role="alert" class="alert alert-danger alert-dismissible text-left">
+                        <button aria-label="Close" class="close" (click)="hideAllAlert()" type="button"><span
+                                aria-hidden="true">×</span></button>
+                        {{alertmessage}}
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>First Name<span class="ml-2 text-danger">*</span></label>
+                    <input type="text" class="form-control" [(ngModel)]="UserModel.firstname" name="firstname"
+                        maxlength="50" #reffirstname="ngModel" placeholder="First Name" required autocomplete="false">
+                    <div *ngIf="!reffirstname.valid  && (reffirstname.dirty || reffirstname.touched)"
+                        class="text-danger">
+                        <small [hidden]="!reffirstname.errors.required">
+                            First Name is required
+                        </small>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Last Name<span class="ml-2 text-danger">*</span></label>
+                    <input type="text" class="form-control" placeholder="Last Name" [(ngModel)]="UserModel.lastname"
+                        maxlength="50" name="lastname" #reflastname="ngModel" required autocomplete="false">
+                    <div *ngIf="!reflastname.valid  && (reflastname.dirty || reflastname.touched)" class="text-danger">
+                        <small [hidden]="!reflastname.errors.required">
+                            Last Name is required
+                        </small>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Email<span class="ml-2 text-danger">*</span></label>
+                    <input type="text" class="form-control" placeholder="Email" [disabled]="(UserModel.id > 0)"
+                        [(ngModel)]="UserModel.email" pattern="^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$" name="email"
+                        maxlength="50" #refemail="ngModel" required autocomplete="false">
+                    <div *ngIf="!refemail.valid  && (refemail.dirty || refemail.touched)" class="text-danger">
+                        <p class="errmessage-height"> <small [hidden]="!refemail.errors.required">
+                                Email is required
+                            </small>
+                        </p>
+                        <p class="errmessage-height">
+                            <small *ngIf="refemail.errors.pattern" class="text-danger">
+                                Please provide a valid email address</small>
+                        </p>
+                    </div>
+                </div>
+                <div class="form-group" *ngIf="(UserModel.id <= 0)">
+                    <label>Password<span class="ml-2 text-danger">*</span></label>
+                    <input type="password" class="form-control" placeholder="Password" [(ngModel)]="UserModel.password"
+                        name="password" #password="ngModel" compare-password="confirmpassword" parent="true"
+                        maxlength="50"
+                        pattern="^(?=[^a-z]*[a-z])(?=[^A-Z]*[A-Z])(?=[^1-9]*[1-9])(?=.*[$#@$!%*?&]).{8,}$" required>
+                    <div *ngIf="(UserModel.id <= 0) && !password.valid  && (password.dirty || password.touched)"
+                        class="text-danger">
+                        <p class="errmessage-height"> <small [hidden]="!password.errors.required">
+                                Password is required
+                            </small>
+                        </p>
+                        <p class="errmessage-height">
+                            <small *ngIf="password.errors.pattern" class="text-danger">
+                                Must be atleast 8 Characters, 1 Number, 1 Capital Case, 1 Small Case, 1 Special
+                                Character</small>
+                        </p>
+                    </div>
+                </div>
+                <div class="form-group" *ngIf="(UserModel.id <= 0)">
+                    <label>Confirm Password<span class="ml-2 text-danger">*</span></label>
+                    <input type="password" class="form-control" placeholder="Confirm Password"
+                        [(ngModel)]="UserModel.confirmpassword" name="confirmpassword" #confirmpassword="ngModel"
+                        compare-password="password" maxlength="50"
+                        pattern="^(?=[^a-z]*[a-z])(?=[^A-Z]*[A-Z])(?=[^1-9]*[1-9])(?=.*[$#@$!%*?&]).{8,}$" required>
+                    <div *ngIf="(UserModel.id <= 0) && !confirmpassword.valid  && (confirmpassword.dirty || confirmpassword.touched)"
+                        class="text-danger">
+                        <p class="errmessage-height">
+                            <small [hidden]="!confirmpassword?.errors.required">
+                                Confirm Password is required
+                            </small>
+                        </p>
+                        <p class="errmessage-height">
+                            <small *ngIf="confirmpassword.errors.pattern" class="text-danger">
+                                Must be atleast 8 Characters, 1 Number, 1 Capital Case, 1 Small Case, 1 Special
+                                Character</small>
+                        </p>
+                        <p class="errmessage-height">
+                            <small
+                                *ngIf="((password?.errors && password?.errors.compare) || (confirmpassword?.errors && confirmpassword?.errors.compare)) && !confirmpassword?.errors.required">
+                                Confirm Password is not match
+                            </small>
+                        </p>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Dashboard Message<span class="ml-2 text-danger">*</span></label>
+                    <textarea class="form-control" placeholder="Dashboard Message" [(ngModel)]="UserModel.message"
+                        name="message" #refmessage="ngModel" required autocomplete="false" maxlength="500"></textarea>
+                    <div *ngIf="!refmessage.valid  && (refmessage.dirty || refmessage.touched)" class="text-danger">
+                        <p class="errmessage-height"> <small [hidden]="!refmessage.errors.required">
+                                Message is required
+                            </small>
+                        </p>
+                        <p class="errmessage-height">
+                            <small *ngIf="refmessage.errors?.maxlength" class="text-danger">
+                                This field is allow to enter max 500 characters</small>
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button [disabled]="!f.form.valid" class="btn btn-primary" type="submit">Save</button>
+                <button (click)="c('Close click')" class="btn btn-secondary" type="button">Close</button>
+            </div>
+        </form>
+    </ng-template>
+    <ng-template #userdeleteconfirmation let-c="close" let-d="dismiss">
+        <div class="modal-header">
+            <h4 class="modal-title" id="modal-title">Delete Confirmation</h4>
+            <button type="button" class="close" aria-label="Close button" aria-describedby="modal-title"
+                (click)="c('Cross click')">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        <div class="modal-body">
+            <p><strong>Are you sure you want to delete <span class="text-primary">"{{deleteduser}}"</span>
+                    profile?</strong>
+            </p>
+            <p>All information associated to this user profile will be permanently deleted.
+                <span class="text-danger">This operation can not be undone.</span>
+            </p>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-outline-secondary" (click)="c('cancel click')">Cancel</button>
+            <button type="button" ngbAutofocus class="btn btn-danger" (click)="deleteUser()">Ok</button>
+        </div>
+    </ng-template>
+</div>

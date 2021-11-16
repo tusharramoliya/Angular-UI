@@ -1,0 +1,150 @@
+<div [@routerTransition] class="login-page">
+    <div class="row justify-content-md-center">
+        <div class="col-md-4">
+            <!-- <img class="user-avatar" src="assets/images/logo.png" width="150px" /> -->
+            <h3>Stripe Payment Demo</h3>
+            <div class="col-md-12" *ngIf="isshowmainalert">
+                <div *ngIf="!iserror" role="alert" class="alert alert-success alert-dismissible text-left">
+                    <button aria-label="Close" class="close" (click)="hideAllAlert()" type="button"><span
+                            aria-hidden="true">×</span></button>
+                    {{alertmessage}}
+                </div>
+                <div *ngIf="iserror" role="alert" class="alert alert-danger alert-dismissible text-left">
+                    <button aria-label="Close" class="close" (click)="hideAllAlert()" type="button"><span
+                            aria-hidden="true">×</span></button>
+                    {{alertmessage}}
+                </div>
+            </div>
+            <form #f="ngForm" (ngSubmit)="onSubmit(f)" novalidate>
+                <div>
+                    <div class="form-group">
+                        <input [placeholder]="'Full Name' | translate" class="form-control input-underline input-lg"
+                            type="text" [(ngModel)]="StripePaymentModel.fullname" name="fullname" #reffullname="ngModel"
+                            required autocomplete="false" />
+                        <div *ngIf="!reffullname.valid  && (reffullname.dirty || reffullname.touched)"
+                            class="text-danger text-left">
+                            <small [hidden]="!reffullname.errors.required">
+                                Full Name is required
+                            </small>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <input [placeholder]="'Birthdate' | translate" class="form-control input-underline input-lg"
+                            type="date" [(ngModel)]="StripePaymentModel.birthdate" name="birthdate"
+                            #refbirthdate="ngModel" required autocomplete="false" />
+                        <div *ngIf="!refbirthdate.valid  && (refbirthdate.dirty || refbirthdate.touched)"
+                            class="text-danger text-left">
+                            <small [hidden]="!refbirthdate.errors.required">
+                                Birthdate is required
+                            </small>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <input [placeholder]="'Amount' | translate" class="form-control input-underline input-lg"
+                            type="text" [(ngModel)]="StripePaymentModel.amount" name="amount" #refamount="ngModel"
+                            required autocomplete="false" />
+                        <div *ngIf="!refamount.valid  && (refamount.dirty || refamount.touched)"
+                            class="text-danger text-left">
+                            <small [hidden]="!refamount.errors.required">
+                                Amount is required
+                            </small>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <textarea [placeholder]="'Address Line 1' | translate"
+                                    class="form-control input-underline input-lg" type="text"
+                                    [(ngModel)]="StripePaymentModel.address.line1" name="address1"
+                                    #refaddress1="ngModel" required autocomplete="false" rows="5"></textarea>
+                                <div *ngIf="!refaddress1.valid  && (refaddress1.dirty || refaddress1.touched)"
+                                    class="text-danger text-left">
+                                    <p class="errmessage-height"> <small [hidden]="!refaddress1.errors.required">
+                                            Address Line 1 is required
+                                        </small>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <textarea [placeholder]="'Address Line 1' | translate"
+                                    class="form-control input-underline input-lg" type="text"
+                                    [(ngModel)]="StripePaymentModel.address.line2" name="address2"
+                                    #refaddress2="ngModel" required autocomplete="false" rows="5"></textarea>
+                                <div *ngIf="!refaddress2.valid  && (refaddress2.dirty || refaddress2.touched)"
+                                    class="text-danger text-left">
+                                    <p class="errmessage-height"> <small [hidden]="!refaddress2.errors.required">
+                                            Address Line2 is required
+                                        </small>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <input [placeholder]="'City' | translate" class="form-control input-underline input-lg"
+                                    type="text" [(ngModel)]="StripePaymentModel.address.city" name="city"
+                                    #refcity="ngModel" required autocomplete="false" />
+                                <div *ngIf="!refcity.valid  && (refcity.dirty || refcity.touched)"
+                                    class="text-danger text-left">
+                                    <small [hidden]="!refcity.errors.required">
+                                        City is required
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <input [placeholder]="'State' | translate" class="form-control input-underline input-lg"
+                                    type="text" [(ngModel)]="StripePaymentModel.address.state" name="state"
+                                    #refstate="ngModel" required autocomplete="false" />
+                                <div *ngIf="!refstate.valid  && (refstate.dirty || refstate.touched)"
+                                    class="text-danger text-left">
+                                    <small [hidden]="!refstate.errors.required">
+                                        State is required
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <input [placeholder]="'Postal Code' | translate"
+                                    class="form-control input-underline input-lg" type="text"
+                                    [(ngModel)]="StripePaymentModel.address.postalcode" name="postalcode"
+                                    #refpostalcode="ngModel" required autocomplete="false" />
+                                <div *ngIf="!refpostalcode.valid  && (refpostalcode.dirty || refpostalcode.touched)"
+                                    class="text-danger text-left">
+                                    <small [hidden]="!refpostalcode.errors.required">
+                                        Postal Code is required
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <input [placeholder]="'Country' | translate"
+                                    class="form-control input-underline input-lg" type="text"
+                                    [(ngModel)]="StripePaymentModel.address.country" name="country"
+                                    #refcountry="ngModel" required autocomplete="false" />
+                                <div *ngIf="!refcountry.valid  && (refcountry.dirty || refcountry.touched)"
+                                    class="text-danger text-left">
+                                    <small [hidden]="!refcountry.errors.required">
+                                        Country is required
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+                <button [disabled]="!f.form.valid" type="submit" class="btn rounded-btn">
+                    {{ 'Virtual Card' | translate}}</button>
+            </form>
+        </div>
+    </div>
+</div>

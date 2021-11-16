@@ -1,0 +1,47 @@
+<div [@routerTransition] class="login-page">
+    <div class="row justify-content-md-center">
+        <div class="col-md-4">
+            <img class="user-avatar" src="assets/images/logo.png" width="150px" />
+            <h1>Angular Demo</h1>
+            <form #f="ngForm" (ngSubmit)="onSubmit(f)" novalidate>
+                <div *ngIf="iserrorShow" role="alert" class="alert alert-danger alert-dismissible text-left">
+                    <button aria-label="Close" class="close" (click)="closeAlert()" type="button"><span
+                            aria-hidden="true">×</span></button>
+                    {{errorMessage}}
+                </div>
+                <div class="form-content">
+                    <div class="form-group">
+                        <input [placeholder]="'User Name' | translate" class="form-control input-underline input-lg"
+                            type="text" [(ngModel)]="LoginModel.username" name="username" #refUsername="ngModel"
+                            id="Username" required />
+                        <div *ngIf="!refUsername.valid  && (refUsername.dirty || refUsername.touched)"
+                            class="text-danger text-left">
+                            <small [hidden]="!refUsername.errors.required">
+                                Username is required
+                            </small>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <input [placeholder]="'Password' | translate" class="form-control input-underline input-lg"
+                            type="password" [(ngModel)]="LoginModel.password" name="password" #refPassword="ngModel"
+                            id="Password" required />
+                        <div *ngIf="!refPassword.valid  && (refPassword.dirty || refPassword.touched)"
+                            class="text-danger text-left">
+                            <small [hidden]="!refPassword.errors.required">
+                                Password is required
+                            </small>
+                        </div>
+                    </div>
+                </div>
+
+                <button [disabled]="!f.form.valid" class="btn rounded-btn">Login</button>
+                <!-- <a (click)="onLoggedin()" [routerLink]="['/dashboard']" class="btn rounded-btn">{{
+                    'Log in' | translate
+                    }}</a> -->
+                &nbsp;
+                <a [routerLink]="['/signup']" class="btn rounded-btn">{{ 'Register' | translate }}</a>
+            </form>
+        </div>
+    </div>
+</div>
